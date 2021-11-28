@@ -8,9 +8,6 @@ class App {
     const container = document.createElement('div')
     document.body.appendChild(container)
 
-    // this.camera = new THREE.PerspectiveCamera(60,
-    //     window.innerWidth / window.innerHeight, 0.1, 100)
-    // this.camera.position.set(0, 0, 4)
     this.camera = new THREE.PerspectiveCamera(50,
         window.innerWidth / window.innerHeight, 0.1, 100)
     this.camera.position.set( 0, 1.6, 3 )
@@ -23,7 +20,6 @@ class App {
     this.scene.add(ambient)
 
     const light = new THREE.DirectionalLight(0xffffff)
-    // light.position.set(0.2, 1, 1)
     light.position.set( 1, 1, 1 ).normalize()
     this.scene.add(light)
 
@@ -38,8 +34,8 @@ class App {
     this.controls.target.set(0, 1.6, 0)
     this.controls.update()
 
-    this.initSceneCube()
-    // this.initScene()
+    // this.initSceneCube()
+    this.initScene()
     this.setupVR()
 
     this.renderer.setAnimationLoop(this.render.bind(this))
@@ -64,15 +60,37 @@ class App {
     const sphere = new THREE.Mesh( geometrySphere, materialSphere )
     this.scene.add( sphere )
 
-    // sphere.position.set(1.5, 0, 0)
+    sphere.position.set(0, 0, 0)
   }
 
   initScene(){
+    this.radius = 0.08
 
+    this.room = new THREE.LineSegments(
+      new BoxLineGeometry( 6, 6, 6, 10, 10,  10 ),
+      new THREE.LineBasicMaterial( { color: 0x808080} )
+  )
+    this.room.geometry.translate( 0, 3, 0 )
+    this.scene.add( this.room )
+
+    const geometry = new THREE.IcosahedronBufferGeometry( this.radius, 2 )
+
+    for ( let i = 0; i < 900; i ++ ) {
+
+      const object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) )
+
+      object.position.x = this.random( -2, 2 )
+      object.position.y = this.random( 0, 4 )
+      object.position.z = this.random( -2, 2 )
+
+      this.room.add( object )
+
+    }
   }
 
   setupVR(){
-
+    this.renderer.xr.enabled = true
+    document.body.appendChild( VRButton.createButton( this.renderer ) )
   }
 
   resize() {
